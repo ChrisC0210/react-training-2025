@@ -10,8 +10,8 @@ import Week2 from './pages/Week2/layout';
 
 const routes = [
   {
-    // path: "/", element: <Layout />,
-    path: "", element: <Layout />,
+    path: "/react-training-2025", element: <Layout />,
+    // path: "", element: <Layout />,
     /// + in the Routes path="/" need to be path=""
     // https://github.com/orgs/community/discussions/36010
     children: [

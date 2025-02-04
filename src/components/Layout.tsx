@@ -16,13 +16,13 @@ const Layout: React.FC = () => {
             <div className="collapse navbar-collapse" id="navbarText">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <Link className='nav-link active' to="/">Home</Link>
+                  <Link className='nav-link active' to="/react-training-2025">Home</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/week1">Week1</Link>
+                  <Link className='nav-link' to="/react-training-2025/week1">Week1</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/week2">Week2</Link>
+                  <Link className='nav-link' to="/react-training-2025/week2">Week2</Link>
                 </li>
               </ul>
               {/* <span className="navbar-text">
