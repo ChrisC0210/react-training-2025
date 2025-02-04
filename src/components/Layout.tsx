@@ -19,7 +19,7 @@ const Layout: React.FC = () => {
                   <Link className='nav-link active' to="/react-training-2025">Home</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/react-training-2025/week1">Week1</Link>
+                  <Link className='nav-link' to="https://chrisc0210.github.io/ReactWeek1/">Week1</Link>
                 </li>
                 <li className="nav-item">
                   <Link className='nav-link' to="/react-training-2025/week2">Week2</Link>
