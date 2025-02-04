@@ -10,14 +10,14 @@ import Week2 from './pages/Week2/layout';
 
 const routes = [
   {
-    path: "/react-training-2025", element: <Layout />,
+    path: "/react-training-2025/", element: <Layout />,
     // path: "", element: <Layout />,
     /// + in the Routes path="/" need to be path=""
     // https://github.com/orgs/community/discussions/36010
     children: [
       { index: true, element: <Home/> },
-      { path: "week1", element: <Week1/> },
-      { path: "week2", element: <Week2/>}
+      { path: "/react-training-2025/week1", element: <Week1/> },
+      { path: "/react-training-2025/week2", element: <Week2/>}
     ]
   },
 ]
