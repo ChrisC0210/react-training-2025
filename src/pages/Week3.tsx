@@ -20,6 +20,7 @@ function Week3() {
     imagesUrl: string[];
   }
   interface defaultModalState {
+    id?: string;
     imageUrl: string;
     title: string;
     category: string;
@@ -37,6 +38,7 @@ function Week3() {
 
   //定義 Modal 預設值
   const defaultModalState = {
+    id: "",
     imageUrl: "",
     title: "",
     category: "",
@@ -137,8 +139,10 @@ function Week3() {
 
   //產品 modal 設定
   const productModalRef = useRef<HTMLDivElement>(null);
+  const delProductModalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     new Modal(productModalRef.current!);
+    new Modal(delProductModalRef.current!);
     // productModal.show();
   }, []);
   interface OpenProductModalParams {
@@ -149,6 +153,7 @@ function Week3() {
     setModalMode(mode);
     if (product) {
       setTempProduct({
+        id: product.id.toString(),
         imageUrl: product.imageUrl,
         title: product.title,
         category: product.category,
@@ -168,8 +173,34 @@ function Week3() {
       modalInstance.show();
     }
   }
+  const openDelProductModal = (product: Product) => {
+    setTempProduct({
+      id: product.id.toString(),
+      imageUrl: product.imageUrl,
+      title: product.title,
+      category: product.category,
+      unit: '',
+      origin_price: product.origin_price.toString(),
+      price: product.price.toString(),
+      description: product.description,
+      content: product.content,
+      is_enabled: product.is_enabled,
+      imagesUrl: product.imagesUrl
+    });
+    const modalInstance = Modal.getInstance(delProductModalRef.current!);
+    if (modalInstance) {
+      modalInstance.show();
+    }
+  }
   const closeProductModal = () => {
     const modalInstance = Modal.getInstance(productModalRef.current!);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+    setTempProduct(defaultModalState);
+  }
+  const closeDelProductModal = () => {
+    const modalInstance = Modal.getInstance(delProductModalRef.current!);
     if (modalInstance) {
       modalInstance.hide();
     }
@@ -237,9 +268,30 @@ function Week3() {
       alert('新增失敗');
     }
   }
-  const handleUploadProduct = async () => {
+  const updateProduct = async () => {
     try {
-      await createProduct();
+      const res = await axios.put(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`,
+        {
+          data: {
+            ...tempProduct,
+            origin_price: Number(tempProduct.origin_price),
+            price: Number(tempProduct.price),
+            is_enabled: tempProduct.is_enabled ? 1 : 0
+          }
+        });
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+      alert('更新失敗');
+    }
+  }
+
+  const handleUploadProduct = async () => {
+    const apiCall = modalMode === 'create' ? createProduct : updateProduct;
+
+    try {
+      // await createProduct();
+      await apiCall();
       // alert('新增成功');
       getProducts();
       closeProductModal();
@@ -248,7 +300,36 @@ function Week3() {
       alert('新增失敗');
     }
   }
-  // 更新產品
+  // 刪除產品
+  const delProduct = async () => {
+    try {
+      const res = await axios.delete(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`,
+        {
+          data: {
+            ...tempProduct,
+            origin_price: Number(tempProduct.origin_price),
+            price: Number(tempProduct.price),
+            is_enabled: tempProduct.is_enabled ? 1 : 0
+          }
+        });
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+      alert('刪除失敗');
+    }
+  }
+  const handleDelProduct = async () => {
+    try {
+      // await createProduct();
+      await delProduct();
+      // alert('新增成功');
+      getProducts();
+      closeDelProductModal();
+    } catch (error) {
+      console.error(error);
+      alert('刪除產品失敗');
+    }
+  }
 
   return (
     <>
@@ -276,13 +357,19 @@ function Week3() {
                       <td className="fw-bold">{item.title}</td>
                       <td>{item.origin_price}</td>
                       <td>{item.price}</td>
-                      <td>{item.is_enabled ? "是" : "否"}</td>
+                      <td>{item.is_enabled ?
+                        (
+                          <span className="text-success">啟用</span>
+                        ) : (
+                          <span className="text-danger">未啟用</span>
+                        )}
+                      </td>
                       <td>
                         {/* <button className="btn btn-primary" onClick={() => { setTempProduct(item) }}>查看細節</button> */}
                         {/* <div className="btn-group"> */}
                         <div className="">
-                          <button onClick={() => { openProductModal('edit', productList.find(product => product.id === item.id)) }} type="button" className="btn btn-primary btn-sm me-2"><i className="bi bi-pencil-square"></i>&nbsp;編輯</button>
-                          <button type="button" className="btn btn-danger btn-sm"><i className="bi bi-trash3-fill"></i>&nbsp;刪除</button>
+                          <button onClick={() => { const product = productList.find(product => product.id === item.id); if (product) openProductModal('edit', product); }} type="button" className="btn btn-primary btn-sm me-2"><i className="bi bi-pencil-square"></i>&nbsp;編輯</button>
+                          <button onClick={() => { const product = productList.find(product => product.id === item.id); if (product) openDelProductModal(product); }} type="button" className="btn btn-danger btn-sm"><i className="bi bi-trash3-fill"></i>&nbsp;刪除</button>
                         </div>
                       </td>
                     </tr>
@@ -402,7 +489,7 @@ function Week3() {
                 <div className="col-md-8">
                   <div className="mb-3">
                     <label htmlFor="title" className="form-label">
-                      標題
+                      標題{tempProduct.id}
                     </label>
                     <input
                       value={tempProduct.title}
@@ -529,6 +616,45 @@ function Week3() {
               </button>
               <button onClick={handleUploadProduct} type="button" className="btn btn-primary">
                 確認
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* 刪除產品 Modal */}
+      <div
+        ref={delProductModalRef}
+        id="delProductModal"
+        className="modal fade"
+        tabIndex={-1}
+        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5">刪除產品</h1>
+              <button
+                onClick={closeDelProductModal}
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              你是否要刪除&nbsp;
+              <span className="text-danger fw-bold">{tempProduct.title}?</span>
+            </div>
+            <div className="modal-footer">
+              <button
+                onClick={closeDelProductModal}
+                type="button"
+                className="btn btn-secondary"
+              >
+                取消
+              </button>
+              <button onClick={handleDelProduct} type="button" className="btn btn-danger">
+                刪除
               </button>
             </div>
           </div>
