@@ -24,6 +24,9 @@ const Layout: React.FC = () => {
                 <li className="nav-item">
                   <Link className='nav-link' to="/react-training-2025/week2">Week2</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className='nav-link' to="/react-training-2025/week3">Week3</Link>
+                </li>
               </ul>
               {/* <span className="navbar-text">
               LOGIN
