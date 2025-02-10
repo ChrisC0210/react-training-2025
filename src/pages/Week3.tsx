@@ -15,6 +15,7 @@ function Week3() {
     is_enabled: boolean;
     imageUrl: string;
     category: string;
+    unit: string;
     description: string;
     content: string;
     imagesUrl: string[];
@@ -48,7 +49,7 @@ function Week3() {
     description: "",
     content: "",
     is_enabled: 0,
-    imagesUrl: [""]
+    imagesUrl: []
   };
 
   // const [tempProduct, setTempProduct] = React.useState<Product | null>(null); // 單一產品細節
@@ -154,16 +155,16 @@ function Week3() {
     if (product) {
       setTempProduct({
         id: product.id.toString(),
-        imageUrl: product.imageUrl,
+        imageUrl: product.imageUrl || "",  // 確保 `imageUrl` 存在
         title: product.title,
         category: product.category,
-        unit: '',
+        unit: product.unit,
         origin_price: product.origin_price.toString(),
         price: product.price.toString(),
         description: product.description,
         content: product.content,
         is_enabled: product.is_enabled,
-        imagesUrl: product.imagesUrl
+        imagesUrl: product.imagesUrl.length > 0 ? product.imagesUrl : []
       });
     } else {
       setTempProduct(defaultModalState);
@@ -213,7 +214,8 @@ function Week3() {
     setTempProduct((prevProduct) => ({
       ...prevProduct!,
       [name]: type === 'checkbox' ? checked : value
-    }));
+    })
+  );
   }
   // 處理 Modal 其他圖片輸入
   const handleModalImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -436,16 +438,17 @@ function Week3() {
                         placeholder="請輸入圖片連結"
                       />
                     </div>
-                    <img
-                      src={tempProduct.imageUrl}
-                      alt={tempProduct.title}
-                      className="img-fluid"
-                    />
-                  </div>
+                    {tempProduct.imageUrl ? (
+                      <img src={BASE_URL + tempProduct.imageUrl}  alt={tempProduct.title} className="img-fluid" 
+                      />
+                    ) : (
+                      <div className="text-muted">尚無圖片</div>
+                    )}
 
+                  </div>
                   {/* 其他圖片 */}
                   <div className="border border-2 border-dashed rounded-3 p-3">
-                    {tempProduct && tempProduct.imagesUrl?.map((image: string, index: number) => (
+                    {tempProduct.imagesUrl.map((image: string, index: number) => (
                       <div key={index} className="mb-2">
                         <label
                           htmlFor={`imagesUrl-${index + 1}`}
@@ -461,13 +464,16 @@ function Week3() {
                           placeholder={`圖片網址 ${index + 1}`}
                           className="form-control mb-2"
                         />
-                        {image && (
-                          <img
-                            src={image}
-                            alt={`副圖 ${index + 1}`}
-                            className="img-fluid mb-2"
-                          />
+                        {tempProduct.imagesUrl.length > 0 && tempProduct.imagesUrl.some(url => url) ? (
+                          tempProduct.imagesUrl.map((image, index) => (
+                            image ? <img key={index} src={image} alt={`副圖 ${index + 1}`} className="img-fluid" 
+                            /> : null
+                          ))
+                        ) : (
+                          <div className="text-muted">無附圖</div>
                         )}
+
+
                       </div>
                     ))}
                     {/* //新增圖片和取消圖片按鈕 */}
