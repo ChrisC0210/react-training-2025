@@ -15,6 +15,9 @@ const Layout: React.FC = () => {
             </button>
             <div className="collapse navbar-collapse" id="navbarText">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                  <Link className='nav-link' to="/react-training-2025/login">Login</Link>
+                </li>
                 <li className="nav-item">
                   <Link className='nav-link active' to="/react-training-2025">Home</Link>
                 </li>
@@ -26,6 +29,9 @@ const Layout: React.FC = () => {
                 </li>
                 <li className="nav-item">
                   <Link className='nav-link' to="/react-training-2025/week3">Week3</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className='nav-link' to="/react-training-2025/week4">Week4</Link>
                 </li>
               </ul>
               {/* <span className="navbar-text">

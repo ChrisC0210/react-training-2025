@@ -48,3 +48,17 @@ export default tseslint.config({
   },
 })
 ```
+```js
+src
+  ├─ components
+  │    ├─ Login
+  │    │    └─ Login.tsx
+  │    └─ Product
+  │         ├─ ProductPage.tsx          // 產品頁(整合列表 + Modal + 分頁)
+  │         ├─ ProductModal.tsx         // 編輯/新增 產品 Modal
+  │         ├─ DeleteProductModal.tsx   // 刪除產品 Modal
+  │         ├─ Pagination.tsx           // 分頁元件
+  │         └─ type.ts                  // 產品的型別宣告或介面
+  ├─ Week4.tsx                          // 入口檔 (統一匯入 Login 與 ProductPage)
+  └─ main.tsx / index.tsx (一般 React 專案入口) 
+```
