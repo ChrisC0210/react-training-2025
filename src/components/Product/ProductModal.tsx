@@ -1,4 +1,4 @@
-import React , { useState } from 'react';
+import React, { useState } from 'react';
 import { DefaultModalState } from './type';
 import axios from 'axios';
 // import { Modal } from 'bootstrap';
@@ -47,7 +47,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           }
         }
       );
-       // API 回傳的圖片 URL
+      // API 回傳的圖片 URL
       // console.log(res.data);
       const uploadImageUrl = res.data.imageUrl;
       // console.log("uploadImageUrl", uploadImageUrl);
@@ -102,6 +102,38 @@ const ProductModal: React.FC<ProductModalProps> = ({
       imagesUrl: prevProduct.imagesUrl.slice(0, prevProduct.imagesUrl.length - 1),
     }));
   }
+  //
+  const handleAdditionalFileChange = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const fileInput = e.target;
+    const file = fileInput.files?.[0];
+
+    if (!file) {
+      alert("請選擇圖片檔案");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file-to-upload", file);
+
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/v2/api${API_PATH}/admin/upload`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      console.log(`副圖片上傳成功: ${res.data.imageUrl}`);
+
+      setTempProduct((prev) => {
+        const newImagesUrl = [...prev.imagesUrl];
+        newImagesUrl[index] = res.data.imageUrl; // 更新對應的 index
+        return { ...prev, imagesUrl: newImagesUrl };
+      });
+    } catch (error) {
+      console.error("副圖片上傳失敗:", error);
+      alert("副圖片上傳失敗");
+    }
+  };
 
   return (
     <>
@@ -161,6 +193,16 @@ const ProductModal: React.FC<ProductModalProps> = ({
                         >
                           其他圖片 {index + 1}
                         </label>
+                        {/* 圖片上傳 input */}
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png"
+                          className="form-control mb-2"
+                          id={`fileInput-${index}`}
+                          onChange={(e) => handleAdditionalFileChange(e, index)}
+                        />
+
+                        {/* 手動輸入圖片 URL */}
                         <input
                           value={image}
                           onChange={(e) => handleModalImageChange(e, index)} // 傳入 index 參數,以便知道是哪一個圖片欄位被更改了
@@ -169,13 +211,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
                           placeholder={`圖片網址 ${index + 1}`}
                           className="form-control mb-2"
                         />
-                        {tempProduct.imagesUrl.length > 0 && tempProduct.imagesUrl.some(url => url) ? (
-                          tempProduct.imagesUrl.map((image, index) => (
-                            image ? <img key={index} src={image} alt={`副圖 ${index + 1}`} className="img-fluid"
-                            /> : null
-                          ))
+                        {/* 預覽圖片 */}
+                        {image ? (
+                          <img src={image} alt={`副圖 ${index + 1}`} className="img-fluid" />
                         ) : (
-                          <div className="text-muted">無附圖</div>
+                          <div className="text-muted">尚無圖片</div>
                         )}
 
 
@@ -319,8 +359,36 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
+              {/* LV3 */}
+              <div className="col-md-12">
+                <div className="mb-3">
+                  <label htmlFor="rating" className="form-label">商品評價星級 (1~5)</label>
+                  <input
+                    value={tempProduct.rating ?? 0}
+                    onChange={(e) => setTempProduct((prev) => ({ ...prev, rating: Number(e.target.value) }))}
+                    type="number"
+                    min="1"
+                    max="5"
+                    className="form-control"
+                    placeholder="請輸入評價星級"
+                  />
+                </div>
 
+                <div className="mb-3">
+                  <label htmlFor="stock" className="form-label">庫存數量</label>
+                  <input
+                    value={tempProduct.stock ?? 0}
+                    onChange={(e) => setTempProduct((prev) => ({ ...prev, stock: Number(e.target.value) }))}
+                    type="number"
+                    min="0"
+                    className="form-control"
+                    placeholder="請輸入庫存數量"
+                  />
+                </div>
+              </div>
+              {/*  */}
+            </div>
+            {/*  */}
             <div className="modal-footer border-top bg-light">
               <button onClick={closeProductModal} type="button" className="btn btn-secondary">
                 取消

@@ -439,7 +439,7 @@ function Week3() {
                       />
                     </div>
                     {tempProduct.imageUrl ? (
-                      <img src={BASE_URL + tempProduct.imageUrl}  alt={tempProduct.title} className="img-fluid" 
+                        <img src={tempProduct.imageUrl}  alt={tempProduct.title} className="img-fluid" 
                       />
                     ) : (
                       <div className="text-muted">尚無圖片</div>

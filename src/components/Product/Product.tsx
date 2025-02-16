@@ -151,6 +151,8 @@ const Product: React.FC = () => {
             is_enabled: tempProduct.is_enabled ? 1 : 0,
             // imagesUrl: tempProduct.imagesUrl,
             imagesUrl: Array.isArray(tempProduct.imagesUrl) ? tempProduct.imagesUrl : [], // 確保 imagesUrl 是陣列
+            rating: tempProduct.rating ?? 0,
+            stock: tempProduct.stock ?? 0,
           }
         });
       console.log(res.data);
@@ -175,6 +177,8 @@ const Product: React.FC = () => {
             is_enabled: tempProduct.is_enabled ? 1 : 0,
             // imagesUrl: tempProduct.imagesUrl
             imagesUrl: Array.isArray(tempProduct.imagesUrl) ? tempProduct.imagesUrl : [], // 確保 imagesUrl 存在
+            rating: tempProduct.rating ?? 0,
+            stock: tempProduct.stock ?? 0,
           }
         });
       console.log(res.data);
