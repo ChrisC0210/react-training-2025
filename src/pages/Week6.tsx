@@ -3,7 +3,7 @@ import axios from "axios";
 import { Modal } from "bootstrap";
 import { useForm } from 'react-hook-form';
 import ReactLoading from 'react-loading';
-
+import Navbar from '../components/Navbar';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
@@ -150,306 +150,310 @@ function Week6() {
   const [qtySelect, setQtySelect] = useState(1);
 
   return (
-    <div className="container">
-      {loading && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.5)'
-          }}
-        >
-          <ReactLoading type="spin" color="#000" />
-        </div>
-      )}
-      <div className="mt-4">
-        <table className="table align-middle">
-          <thead>
-            <tr>
-              <th>圖片</th>
-              <th>商品名稱</th>
-              <th>價格</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td style={{ width: "200px" }}>
-                  <img
-                    className="img-fluid"
-                    src={product.imageUrl}
-                    alt={product.title}
-                  />
-                </td>
-                <td>{product.title}</td>
-                <td>
-                  <del className="h6">原價 {product.origin_price} 元</del>
-                  <div className="h5">特價 {product.origin_price}元</div>
-                </td>
-                <td>
-                  <div className="btn-group btn-group-sm">
-                    <button
-                      onClick={() => handleSeeMore(product)}
-                      type="button"
-                      className="btn btn-outline-secondary"
-                    >
-                      查看更多
-                    </button>
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      type="button"
-                      className="btn btn-outline-danger"
-                    >
-                      加到購物車
-                    </button>
-                  </div>
-                </td>
+    <>
+      <Navbar /> {/* Add this line */}
+      <div className="container">
+        {loading && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)'
+            }}
+          >
+            <ReactLoading type="spin" color="#000" />
+          </div>
+        )}
+        <div className="mt-4">
+          <table className="table align-middle">
+            <thead>
+              <tr>
+                <th>圖片</th>
+                <th>商品名稱</th>
+                <th>價格</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id}>
+                  <td style={{ width: "200px" }}>
+                    <img
+                      className="img-fluid"
+                      src={product.imageUrl}
+                      alt={product.title}
+                    />
+                  </td>
+                  <td>{product.title}</td>
+                  <td>
+                    <del className="h6">原價 {product.origin_price} 元</del>
+                    <div className="h5">特價 {product.origin_price}元</div>
+                  </td>
+                  <td>
+                    <div className="btn-group btn-group-sm">
+                      <button
+                        onClick={() => handleSeeMore(product)}
+                        type="button"
+                        className="btn btn-outline-secondary"
+                      >
+                        查看更多
+                      </button>
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        type="button"
+                        className="btn btn-outline-danger"
+                      >
+                        加到購物車
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        <div
-          ref={productModalRef}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          className="modal fade"
-          id="productModal"
-          tabIndex={-1}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h2 className="modal-title fs-5">
-                  產品名稱：{tempProduct.title}
-                </h2>
-                <button
-                  onClick={closeModal}
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <img
-                  src={tempProduct.imageUrl}
-                  alt={tempProduct.title}
-                  className="img-fluid"
-                />
-                <p>內容：{tempProduct.content}</p>
-                <p>描述：{tempProduct.description}</p>
-                <p>
-                  價錢：{tempProduct.price}{" "}
-                  <del>{tempProduct.origin_price}</del> 元
-                </p>
-                <div className="input-group align-items-center">
-                  <label htmlFor="qtySelect">數量：</label>
-                  <select
-                    value={qtySelect}
-                    onChange={(e) => setQtySelect(Number(e.target.value))}
-                    id="qtySelect"
-                    className="form-select"
-                  >
-                    {Array.from({ length: 10 }).map((_, index) => (
-                      <option key={index} value={index + 1}>
-                        {index + 1}
-                      </option>
-                    ))}
-                  </select>
+          <div
+            ref={productModalRef}
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            className="modal fade"
+            id="productModal"
+            tabIndex={-1}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h2 className="modal-title fs-5">
+                    產品名稱：{tempProduct.title}
+                  </h2>
+                  <button
+                    onClick={closeModal}
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-primary">
-                  加入購物車
-                </button>
+                <div className="modal-body">
+                  <img
+                    src={tempProduct.imageUrl}
+                    alt={tempProduct.title}
+                    className="img-fluid"
+                  />
+                  <p>內容：{tempProduct.content}</p>
+                  <p>描述：{tempProduct.description}</p>
+                  <p>
+                    價錢：{tempProduct.price}{" "}
+                    <del>{tempProduct.origin_price}</del> 元
+                  </p>
+                  <div className="input-group align-items-center">
+                    <label htmlFor="qtySelect">數量：</label>
+                    <select
+                      value={qtySelect}
+                      onChange={(e) => setQtySelect(Number(e.target.value))}
+                      id="qtySelect"
+                      className="form-select"
+                    >
+                      {Array.from({ length: 10 }).map((_, index) => (
+                        <option key={index} value={index + 1}>
+                          {index + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-primary">
+                    加入購物車
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="text-end py-3">
-          <button
-            className="btn btn-outline-danger"
-            type="button"
-            onClick={() => setCart([])}
-          >
-            清空購物車
-          </button>
-        </div>
-
-        <table className="table align-middle">
-          <thead>
-            <tr>
-              <th></th>
-              <th>品名</th>
-              <th style={{ width: "150px" }}>數量/單位</th>
-              <th className="text-end">單價</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {cart.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() =>
-                      setCart((prev) =>
-                        prev.filter((cartItem) => cartItem.id !== item.id)
-                      )
-                    }
-                  >
-                    x
-                  </button>
-                </td>
-                <td>{item.title}</td>
-                <td style={{ width: "150px" }}>
-                  <div className="d-flex align-items-center">
-                    <div className="btn-group me-2" role="group">
-                      <button
-                        type="button"
-                        className="btn btn-outline-dark btn-sm"
-                        onClick={() =>
-                          setCart((prev) =>
-                            prev.map((cartItem) =>
-                              cartItem.id === item.id && cartItem.quantity > 1
-                                ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                                : cartItem
-                            )
-                          )
-                        }
-                      >
-                        -
-                      </button>
-                      <span
-                        className="btn border border-dark"
-                        style={{ width: "50px", cursor: "auto" }}
-                      >
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        className="btn btn-outline-dark btn-sm"
-                        onClick={() =>
-                          setCart((prev) =>
-                            prev.map((cartItem) =>
-                              cartItem.id === item.id
-                                ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                                : cartItem
-                            )
-                          )
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                    <span className="input-group-text bg-transparent border-0">
-                      unit
-                    </span>
-                  </div>
-                </td>
-                <td className="text-end">{item.price * item.quantity}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan={3} className="text-end">
-                總計：
-              </td>
-              <td className="text-end" style={{ width: "130px" }}>
-                {cart.reduce((acc, item) => acc + item.price * item.quantity, 0)}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      <div className="my-5 row justify-content-center">
-        <form className="col-md-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="form-control"
-              placeholder="請輸入 Email"
-              {...register('email', { required: '必填' })}
-            />
-            <p className="text-danger my-2">{errors.email?.message}</p>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              收件人姓名
-            </label>
-            <input
-              id="name"
-              className="form-control"
-              placeholder="請輸入姓名"
-              {...register('name', { required: '必填' })}
-            />
-            <p className="text-danger my-2">{errors.name?.message}</p>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="tel" className="form-label">
-              收件人電話
-            </label>
-            <input
-              id="tel"
-              type="text"
-              className="form-control"
-              placeholder="請輸入電話"
-              {...register('tel', { required: '必填' })}
-            />
-            <p className="text-danger my-2">{errors.tel?.message}</p>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="address" className="form-label">
-              收件人地址
-            </label>
-            <input
-              id="address"
-              type="text"
-              className="form-control"
-              placeholder="請輸入地址"
-              {...register('address', { required: '必填' })}
-            />
-            <p className="text-danger my-2">{errors.address?.message}</p>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="message" className="form-label">
-              留言
-            </label>
-            <textarea
-              id="message"
-              className="form-control"
-              cols={30}
-              rows={10}
-              {...register('message')}
-            ></textarea>
-          </div>
-          <div className="text-end">
-            <button type="submit" className="btn btn-danger">
-              送出訂單
+          <div className="text-end py-3">
+            <button
+              className="btn btn-outline-danger"
+              type="button"
+              onClick={() => setCart([])}
+            >
+              清空購物車
             </button>
           </div>
-        </form>
+
+          <table className="table align-middle">
+            <thead>
+              <tr>
+                <th></th>
+                <th>品名</th>
+                <th style={{ width: "150px" }}>數量/單位</th>
+                <th className="text-end">單價</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {cart.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() =>
+                        setCart((prev) =>
+                          prev.filter((cartItem) => cartItem.id !== item.id)
+                        )
+                      }
+                    >
+                      x
+                    </button>
+                  </td>
+                  <td>{item.title}</td>
+                  <td style={{ width: "150px" }}>
+                    <div className="d-flex align-items-center">
+                      <div className="btn-group me-2" role="group">
+                        <button
+                          type="button"
+                          className="btn btn-outline-dark btn-sm"
+                          onClick={() =>
+                            setCart((prev) =>
+                              prev.map((cartItem) =>
+                                cartItem.id === item.id && cartItem.quantity > 1
+                                  ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                                  : cartItem
+                              )
+                            )
+                          }
+                        >
+                          -
+                        </button>
+                        <span
+                          className="btn border border-dark"
+                          style={{ width: "50px", cursor: "auto" }}
+                        >
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          className="btn btn-outline-dark btn-sm"
+                          onClick={() =>
+                            setCart((prev) =>
+                              prev.map((cartItem) =>
+                                cartItem.id === item.id
+                                  ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                                  : cartItem
+                              )
+                            )
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                      <span className="input-group-text bg-transparent border-0">
+                        unit
+                      </span>
+                    </div>
+                  </td>
+                  <td className="text-end">{item.price * item.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={3} className="text-end">
+                  總計：
+                </td>
+                <td className="text-end" style={{ width: "130px" }}>
+                  {cart.reduce((acc, item) => acc + item.price * item.quantity, 0)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div className="my-5 row justify-content-center">
+          <form className="col-md-6" onSubmit={handleSubmit(onSubmit)}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-control"
+                placeholder="請輸入 Email"
+                {...register('email', { required: '必填' })}
+              />
+              <p className="text-danger my-2">{errors.email?.message}</p>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">
+                收件人姓名
+              </label>
+              <input
+                id="name"
+                className="form-control"
+                placeholder="請輸入姓名"
+                {...register('name', { required: '必填' })}
+              />
+              <p className="text-danger my-2">{errors.name?.message}</p>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="tel" className="form-label">
+                收件人電話
+              </label>
+              <input
+                id="tel"
+                type="text"
+                className="form-control"
+                placeholder="請輸入電話"
+                {...register('tel', { required: '必填' })}
+              />
+              <p className="text-danger my-2">{errors.tel?.message}</p>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="address" className="form-label">
+                收件人地址
+              </label>
+              <input
+                id="address"
+                type="text"
+                className="form-control"
+                placeholder="請輸入地址"
+                {...register('address', { required: '必填' })}
+              />
+              <p className="text-danger my-2">{errors.address?.message}</p>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="message" className="form-label">
+                留言
+              </label>
+              <textarea
+                id="message"
+                className="form-control"
+                cols={30}
+                rows={10}
+                {...register('message')}
+              ></textarea>
+            </div>
+            <div className="text-end">
+              <button type="submit" className="btn btn-danger">
+                送出訂單
+              </button>
+            </div>
+          </form>
+        </div>
+        
       </div>
-    </div>
+    </>
   );
 }
 
