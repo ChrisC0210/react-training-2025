@@ -10,6 +10,7 @@ import Week1 from './pages/Week1';
 import Week2 from './pages/Week2';
 import Week3 from './pages/Week3';
 import Week4 from './pages/Week4';
+import Week5 from './pages/Week5';
 
 
 const routes = [
@@ -25,6 +26,7 @@ const routes = [
       { path: "/react-training-2025/week2", element: <Week2/>},
       { path: "/react-training-2025/week3", element: <Week3/>},
       { path: "/react-training-2025/week4", element: <Week4/>},
+      { path: "/react-training-2025/week5", element: <Week5/>},
     ]
   },
 ]

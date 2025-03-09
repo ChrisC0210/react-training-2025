@@ -33,6 +33,9 @@ const Layout: React.FC = () => {
                 <li className="nav-item">
                   <Link className='nav-link' to="/react-training-2025/week4">Week4</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className='nav-link' to="/react-training-2025/week5">Week5</Link>
+                </li>
               </ul>
               {/* <span className="navbar-text">
               LOGIN

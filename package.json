@@ -12,11 +12,13 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-loading": "^2.0.3",
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
