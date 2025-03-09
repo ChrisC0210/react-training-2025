@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError } from 'axios';
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 bootstrap
@@ -85,38 +85,24 @@ function Week3() {
     }
   };
   // 登入
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); // 阻止表單提交
-    console.log(account)
-    // console.log(import.meta.env.VITE_BASE_URL)
-    axios.post(`${import.meta.env.VITE_BASE_URL}/v2/admin/signin`, account)
-      .then((res: AxiosResponse) => {
-        const { token, expired } = res.data; //解構賦值
-        console.log(token, expired) // 顯示 token 和 expired
-        document.cookie = `hexToken=${token}; expires=${new Date(expired)}`; // 設定 cookie
-        axios.defaults.headers.common['Authorization'] = token; // 設定預設請求標頭
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/v2/admin/signin`, account);
+      const { token, expired } = res.data;
+      document.cookie = `hexToken=${token}; expires=${new Date(expired)}`; // 設定 cookie
+      axios.defaults.headers.common['Authorization'] = token; // 設定預設請求標頭
 
-        if (res.data.success === true) {
-          alert('登入成功');
-          // window.location.href = '/';
-          // axios.get(`${import.meta.env.VITE_BASE_URL}/v2/api${import.meta.env.VITE_API_PATH}/admin/products`)
-          //   .then((res: AxiosResponse) => {
-          //     console.log(res.data)
-          //     setProducts(res.data.products);
-          //   })
-          //   .catch((error) => {
-          //     console.error(error);
-          //   });
-          getProducts(); // 取得產品列表
-          setIsAuth(true);// 登入成功
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        alert('登入失敗');
-        setIsAuth(false);// 登入失敗
-
-      });
+      if (res.data.success === true) {
+        alert('登入成功');
+        await getProducts(); // 取得產品列表
+        setIsAuth(true);// 登入成功
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      alert(`登入失敗: ${axiosError.message || '請檢查帳號密碼是否正確'}`);
+      setIsAuth(false);// 登入失敗
+    }
   }
   // 檢查使用者是否登入
   const checkUserLogin = async () => {
@@ -251,8 +237,7 @@ function Week3() {
   //
   const createProduct = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}/v2/api${API_PATH}/admin/product`,
-        // tempProduct
+      await axios.post(`${BASE_URL}/v2/api${API_PATH}/admin/product`,
         {
           data: {
             ...tempProduct,
@@ -261,18 +246,17 @@ function Week3() {
             is_enabled: tempProduct.is_enabled ? 1 : 0
           }
         });
-      console.log(res.data);
-      // alert('新增成功');
-      // getProducts();
-      // closeProductModal();
+      return { success: true, message: '新增成功' };
     } catch (error) {
-      console.error(error);
-      alert('新增失敗');
+      const axiosError = error as AxiosError<{message?: string}>;
+      const errorMessage = axiosError.response?.data?.message || '發生未知錯誤';
+      return { success: false, message: `新增失敗: ${errorMessage}` };
     }
   }
+  
   const updateProduct = async () => {
     try {
-      const res = await axios.put(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`,
+      await axios.put(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`,
         {
           data: {
             ...tempProduct,
@@ -281,55 +265,45 @@ function Week3() {
             is_enabled: tempProduct.is_enabled ? 1 : 0
           }
         });
-      console.log(res.data);
+      return { success: true, message: '更新成功' };
     } catch (error) {
-      console.error(error);
-      alert('更新失敗');
+      const axiosError = error as AxiosError<{message?: string}>;
+      const errorMessage = axiosError.response?.data?.message || '發生未知錯誤';
+      return { success: false, message: `更新失敗: ${errorMessage}` };
     }
   }
 
   const handleUploadProduct = async () => {
     const apiCall = modalMode === 'create' ? createProduct : updateProduct;
-
-    try {
-      // await createProduct();
-      await apiCall();
-      // alert('新增成功');
-      getProducts();
+    const result = await apiCall();
+    
+    if (result.success) {
+      await getProducts();
       closeProductModal();
-    } catch (error) {
-      console.error(error);
-      alert('新增失敗');
+    } else {
+      alert(result.message);
     }
   }
+  
   // 刪除產品
   const delProduct = async () => {
     try {
-      const res = await axios.delete(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`,
-        {
-          data: {
-            ...tempProduct,
-            origin_price: Number(tempProduct.origin_price),
-            price: Number(tempProduct.price),
-            is_enabled: tempProduct.is_enabled ? 1 : 0
-          }
-        });
-      console.log(res.data);
+      await axios.delete(`${BASE_URL}/v2/api${API_PATH}/admin/product/${tempProduct.id}`);
+      return { success: true, message: '刪除成功' };
     } catch (error) {
-      console.error(error);
-      alert('刪除失敗');
+      const axiosError = error as AxiosError<{message?: string}>;
+      const errorMessage = axiosError.response?.data?.message || '發生未知錯誤';
+      return { success: false, message: `刪除失敗: ${errorMessage}` };
     }
   }
+  
   const handleDelProduct = async () => {
-    try {
-      // await createProduct();
-      await delProduct();
-      // alert('新增成功');
-      getProducts();
+    const result = await delProduct();
+    if (result.success) {
+      await getProducts();
       closeDelProductModal();
-    } catch (error) {
-      console.error(error);
-      alert('刪除產品失敗');
+    } else {
+      alert(result.message);
     }
   }
 
@@ -549,6 +523,7 @@ function Week3() {
                         name="origin_price"
                         id="origin_price"
                         type="number"
+                        min="0"
                         className="form-control"
                         placeholder="請輸入原價"
                       />
@@ -563,6 +538,7 @@ function Week3() {
                         name="price"
                         id="price"
                         type="number"
+                        min="0"
                         className="form-control"
                         placeholder="請輸入售價"
                       />
