@@ -413,7 +413,10 @@ function Week6() {
                 type="text"
                 className="form-control"
                 placeholder="請輸入電話"
-                {...register('tel', { required: '必填' })}
+                {...register('tel', { required: '必填',      pattern: {
+                  value: /^(0[2-8]\d{7}|09\d{8})$/,
+                  message: '請輸入正確的電話格式'
+                } })}
               />
               <p className="text-danger my-2">{errors.tel?.message}</p>
             </div>
