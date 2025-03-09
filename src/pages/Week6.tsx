@@ -7,7 +7,7 @@ import ReactLoading from 'react-loading';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
-function Week5() {
+function Week6() {
   const [products, setProducts] = useState<Product[]>([]);
   const [tempProduct, setTempProduct] = useState({
     title: "",
@@ -453,4 +453,4 @@ function Week5() {
   );
 }
 
-export default Week5;
+export default Week6;

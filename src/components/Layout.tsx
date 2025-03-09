@@ -19,22 +19,25 @@ const Layout: React.FC = () => {
                   <Link className='nav-link' to="/react-training-2025/login">Login</Link>
                 </li> */}
                 <li className="nav-item">
-                  <Link className='nav-link active' to="/react-training-2025">Home</Link>
+                  <Link className='nav-link active' to="/">Home</Link>
                 </li>
                 <li className="nav-item">
                   <Link className='nav-link' to="https://chrisc0210.github.io/ReactWeek1/">Week1</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/react-training-2025/week2">Week2</Link>
+                  <Link className='nav-link' to="/week2">Week2</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/react-training-2025/week3">Week3</Link>
+                  <Link className='nav-link' to="/week3">Week3</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/react-training-2025/week4">Week4</Link>
+                  <Link className='nav-link' to="/week4">Week4</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className='nav-link' to="/react-training-2025/week5">Week5</Link>
+                  <Link className='nav-link' to="/week5">Week5</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className='nav-link' to="/week6">Week6</Link>
                 </li>
               </ul>
               {/* <span className="navbar-text">
