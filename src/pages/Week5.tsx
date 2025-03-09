@@ -10,6 +10,7 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 function Week5() {
   const [products, setProducts] = useState<Product[]>([]);
   const [tempProduct, setTempProduct] = useState({
+    id: "",
     title: "",
     imageUrl: "",
     content: "",
@@ -81,9 +82,18 @@ function Week5() {
   }
 
   const handleSeeMore = (product: Product) => {
-    setTempProduct(product);
+    setTempProduct({
+      id: String(product.id), // 將 product.id 轉換為字串
+      title: product.title,
+      imageUrl: product.imageUrl,
+      content: product.content,
+      description: product.description,
+      price: product.price,
+      origin_price: product.origin_price,
+    });
     openModal();
   };
+
 
   const handleAddToCart = async (product: Product) => {
     setLoading(true);
@@ -266,10 +276,17 @@ function Week5() {
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => tempProduct.id && handleAddToCart(tempProduct)} // 確保有 `id`
+                  disabled={!tempProduct.id} // 如果 `id` 不存在則禁用按鈕
+                >
                   加入購物車
                 </button>
+
               </div>
+
             </div>
           </div>
         </div>

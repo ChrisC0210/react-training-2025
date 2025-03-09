@@ -55,7 +55,12 @@ const ProductDetail: React.FC = () => {
     <>
       <Navbar /> {/* Add this line */}
       <div className="container mt-4">
-        <h1>產品詳細頁</h1>
+        <div className="d-flex justify-content-between align-items-center">
+          <h1>產品詳細頁</h1>
+          <button className="btn btn-outline-primary" onClick={() => navigate("/products")}>
+            返回產品列表
+          </button>
+        </div>
         <img src={product.imageUrl} alt={product.title} className="img-fluid mb-3" />
         <h2>{product.title}</h2>
         <p>{product.content}</p>
@@ -63,11 +68,11 @@ const ProductDetail: React.FC = () => {
         <p>
           價格：{product.price} 元 <del>{product.origin_price} 元</del>
         </p>
-        <div className="text-end">
+        {/* <div className="text-end">
           <button className="btn btn-outline-primary" onClick={() => navigate("/products")}>
             返回產品列表
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

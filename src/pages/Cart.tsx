@@ -60,6 +60,7 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
 
       alert("訂單送出成功！");
       setCart([]); // 清空購物車
+      window.location.reload(); // 重新整理頁面
     } catch (error) {
       console.error("訂單送出失敗", error);
       alert("訂單送出失敗，請稍後再試！");
@@ -73,13 +74,22 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
       <Navbar /> {/* Add this line */}
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center">
-        <h1>購物車</h1>
-        <Link to="/products" className="btn btn-outline-primary mt-3">
-          返回產品列表
-        </Link>
+          <h1>購物車</h1>
+          <Link to="/products" className="btn btn-outline-primary mt-3">
+            返回產品列表
+          </Link>
         </div>
         {cart.length === 0 ? (
-          <p>購物車是空的</p>
+          <div className="text-center mt-5">
+            <div className="text-danger col-12">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="80px" height="80px" viewBox="0 0 22 22" id="memory-cart"><path d="M19 14V16H6V15H5V11H4V8H3V3H1V1H5V4H21V8H20V11H19V12H7V14H19M5 7H6V10H18V7H19V6H5V7M7 17H9V18H10V20H9V21H7V20H6V18H7V17M15 17H17V18H18V20H17V21H15V20H14V18H15V17Z" /></svg>
+            </div>
+            <h2 className="text-muted mt-3">您的購物車是空的</h2>
+            <p className="text-muted">趕快去選購您喜愛的商品吧！</p>
+            <Link to="/products" className="btn btn-primary mt-3">
+              返回產品列表
+            </Link>
+          </div>
         ) : (
           <>
             <table className="table">
@@ -169,14 +179,17 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
                   ></textarea>
                 </div>
 
-                <div className="text-end">
+                <div className="text-center">
                   <button type="submit" className="btn btn-danger" disabled={loading}>
                     {loading ? "送出中..." : "送出訂單"}
                   </button>
                   <button
                     type="button"
                     className="btn btn-outline-secondary ms-2"
-                    onClick={() => setCart([])}
+                    onClick={() => {
+                      setCart([]);
+                      window.location.reload();
+                    }}
                   >
                     清空購物車
                   </button>
