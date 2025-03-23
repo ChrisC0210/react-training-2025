@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
@@ -7,8 +7,17 @@ import type { Product, DefaultModalState, PageInfo } from './type';
 import ProductModal from './ProductModal';
 import Pagination from './Pagination';
 import DeleteProductModal from './DeleteProductModal';
+// import Toast from '../Toast';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../redux/slices/toastSlice';
 
-const Product: React.FC = () => {
+interface ProductProps {
+  isAuth: boolean;
+  token?: string;
+}
+const Product: React.FC<ProductProps> = ({  token }) => {
+    // 添加 dispatch
+    const dispatch = useDispatch();
   //定義 API 網址和路徑
   const BASE_URL = import.meta.env.VITE_BASE_URL; // 從 .env 取得 API 網址
   const API_PATH = import.meta.env.VITE_API_PATH; // 從 .env 取得 API 路徑
@@ -39,23 +48,35 @@ const Product: React.FC = () => {
   const productModalRef = useRef<HTMLDivElement>(null);
   const delProductModalRef = useRef<HTMLDivElement>(null);
 
+// 在所有 axios 請求中添加 token
+useEffect(() => {
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = token;
+  }
+}, [token]);
+
   // 取得產品列表
-  const getProducts = async (page = 1) => {
+  const getProducts = useCallback(async (page = 1) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/v2/api${API_PATH}/admin/products?page=${page}`
+        `${BASE_URL}/v2/api${API_PATH}/admin/products?page=${page}`,
+        { 
+          headers: { Authorization: token },
+          withCredentials: true 
+        }
       );
       setProducts(res.data.products); // 設定產品列表
       setPageInfo(res.data.pagination);// 設定分頁資訊
+      dispatch(showToast('取得產品列表成功'));
     } catch (error) {
       alert("取得產品失敗");
       console.error(error);
     }
-  };
+  }, [BASE_URL, API_PATH, token, dispatch]);
   //取得產品列表
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [getProducts]);
 
   // 處理表單輸入
   // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

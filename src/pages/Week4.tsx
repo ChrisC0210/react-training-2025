@@ -8,7 +8,7 @@ import Product from '../components/Product/Product';
 function Week4() {
   //定義 API 網址和路徑
   const BASE_URL = import.meta.env.VITE_BASE_URL; // 從 .env 取得 API 網址
-  // const API_PATH = import.meta.env.VITE_API_PATH; // 從 .env 取得 API 路徑
+  const API_PATH = import.meta.env.VITE_API_PATH; // 從 .env 取得 API 路徑
 
   const [isAuth, setIsAuth] = useState(false); // 是否登入
   // const [account, setAccount] = useState({
@@ -39,7 +39,8 @@ function Week4() {
   // 登入
   const handleLogin = (username: string, password: string) => {
     // console.log({ username, password })
-    axios.post(`${import.meta.env.VITE_BASE_URL}/v2/admin/signin`, { username, password })
+    axios.post(`${BASE_URL}/v2/api${API_PATH}/admin/signin`, { username, password })
+    // axios.post(`${import.meta.env.VITE_BASE_URL}/v2/admin/signin`, { username, password })
       .then((res: AxiosResponse) => {
         const { token, expired } = res.data; //解構賦值
         // console.log(token, expired) // 顯示 token 和 expired
@@ -64,7 +65,7 @@ function Week4() {
     <>
       {isAuth ? (
         // 如果已登入，顯示產品頁面
-        <Product />
+        <Product isAuth={isAuth} />
       ) : (
         // 尚未登入就顯示登入畫面
         <Login handleLogin={handleLogin} />

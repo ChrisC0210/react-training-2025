@@ -177,8 +177,8 @@ function Week6() {
 
   return (
     <>
-      <Navbar /> {/* Add this line */}
-      <Toast /> {/* Add this line */}
+      <Navbar /> 
+      <Toast /> 
       <div className="container">
         {loading && (
           <div
