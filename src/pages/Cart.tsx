@@ -3,21 +3,14 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from '../components/Navbar';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCart, removeFromCart, updateCartItemQuantity } from '../redux/slices/cartSlice';
+import { showToast } from '../redux/slices/toastSlice';
+import { RootState } from '../redux/store';
+import Toast from '../components/Toast';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
-
-interface CartItem {
-  id: number | string;
-  title: string;
-  price: number;
-  quantity: number;
-}
-
-interface CartProps {
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-}
 
 interface OrderForm {
   email: string;
@@ -27,15 +20,19 @@ interface OrderForm {
   message?: string;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
+
+const Cart = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<OrderForm>();
   const [loading, setLoading] = useState(false);
+  
+  const cart = useSelector((state: RootState) => state.cart);
+  const dispatch = useDispatch();
 
   const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const onSubmit = async (data: OrderForm) => {
     if (cart.length === 0) {
-      alert("購物車是空的，無法送出訂單！");
+      dispatch(showToast("購物車是空的，無法送出訂單！"));
       return;
     }
 
@@ -58,12 +55,75 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
         },
       });
 
+      // dispatch(showToast("訂單。送出成功！"));
       alert("訂單送出成功！");
-      setCart([]); // 清空購物車
-      window.location.reload(); // 重新整理頁面
+      dispatch(clearCart());
+      window.location.reload();
     } catch (error) {
       console.error("訂單送出失敗", error);
+      // dispatch(showToast("訂單送出失敗，請稍後再試！"));
       alert("訂單送出失敗，請稍後再試！");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string | number) => {
+    setLoading(true);
+    try {
+      await axios.delete(`${BASE_URL}/v2/api${API_PATH}/cart/${itemId}`);
+      dispatch(removeFromCart(itemId));
+      dispatch(showToast('已從購物車移除商品'));
+    } catch (error) {
+      console.error('刪除購物車商品失敗', error);
+      dispatch(showToast('刪除購物車商品失敗，請稍後再試'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveOne = async (item: { id: string | number; title: string; quantity: number; price: number; }) => {
+    setLoading(true);
+    try {
+      if (item.quantity > 1) {
+        const newQty = item.quantity - 1;
+        await axios.post(`${BASE_URL}/v2/api${API_PATH}/cart`, {
+          data: {
+            product_id: item.id,
+            qty: newQty
+          }
+        });
+        dispatch(updateCartItemQuantity({ id: item.id, quantity: newQty }));
+        dispatch(showToast(`已減少 1 個 ${item.title}`));
+      } else {
+        // If only 1 left, remove the item entirely
+        await axios.delete(`${BASE_URL}/v2/api${API_PATH}/cart/${item.id}`);
+        dispatch(removeFromCart(item.id));
+        dispatch(showToast(`已從購物車移除 ${item.title}`));
+      }
+    } catch (error) {
+      console.error('更新購物車失敗', error);
+      dispatch(showToast('更新購物車失敗，請稍後再試'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddOne = async (item: { id: string | number; title: string; quantity: number; price: number; }) => {
+    setLoading(true);
+    try {
+      const newQty = item.quantity + 1;
+      await axios.post(`${BASE_URL}/v2/api${API_PATH}/cart`, {
+        data: {
+          product_id: item.id,
+          qty: newQty
+        }
+      });
+      dispatch(updateCartItemQuantity({ id: item.id, quantity: newQty }));
+      dispatch(showToast(`已增加 1 個 ${item.title}`));
+    } catch (error) {
+      console.error('更新購物車失敗', error);
+      dispatch(showToast('更新購物車失敗，請稍後再試'));
     } finally {
       setLoading(false);
     }
@@ -71,7 +131,8 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
 
   return (
     <>
-      <Navbar /> {/* Add this line */}
+      <Navbar />
+      <Toast />
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center">
           <h1>購物車</h1>
@@ -99,15 +160,38 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
                   <th>數量</th>
                   <th>單價</th>
                   <th>總價</th>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
                 {cart.map((item) => (
                   <tr key={item.id}>
                     <td>{item.title}</td>
-                    <td>{item.quantity}</td>
+                    <td>
+                      <button 
+                        className="btn btn-outline-secondary btn-sm me-2"
+                        onClick={() => handleRemoveOne(item)}
+                      >
+                        -
+                      </button>
+                      {item.quantity}
+                      <button
+                        className="btn btn-outline-secondary btn-sm ms-2"
+                        onClick={() => handleAddOne(item)}
+                      >
+                        +
+                      </button>
+                    </td>
                     <td>{item.price} 元</td>
                     <td>{item.price * item.quantity} 元</td>
+                    <td>
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleDeleteItem(item.id)}
+                      >
+                        移除
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -191,7 +275,7 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
                     type="button"
                     className="btn btn-outline-secondary ms-2"
                     onClick={() => {
-                      setCart([]);
+                      dispatch(clearCart());
                       window.location.reload();
                     }}
                   >

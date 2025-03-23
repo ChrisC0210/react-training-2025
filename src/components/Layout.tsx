@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom'
+import Toast from './Toast';
 
 const Layout: React.FC = () => {
   return (
@@ -39,6 +40,9 @@ const Layout: React.FC = () => {
                 <li className="nav-item">
                   <Link className='nav-link' to="/week6">Week6</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className='nav-link' to="/week7">Week7</Link>
+                </li>
               </ul>
               {/* <span className="navbar-text">
               LOGIN
@@ -47,6 +51,7 @@ const Layout: React.FC = () => {
           </div>
         </nav>
         {/* TITLE */}
+        <Toast />
         {/* <main>
         <section>
           <h1>Layout</h1>

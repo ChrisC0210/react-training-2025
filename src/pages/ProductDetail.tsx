@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ReactLoading from "react-loading";
 import Navbar from '../components/Navbar';
+import { useDispatch } from "react-redux";
+import { showToast } from "../redux/slices/toastSlice";
+import { addToCart } from "../redux/slices/cartSlice";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -22,6 +25,7 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -39,6 +43,36 @@ const ProductDetail: React.FC = () => {
     fetchProduct();
   }, [id]);
 
+  const handleAddToCart = async () => {
+    if (!product) return;
+    setLoading(true);
+    try {
+      await axios.post(`${BASE_URL}/v2/api${API_PATH}/cart`, {
+        data: {
+          product_id: product.id,
+          qty: 1
+        }
+      });
+
+      dispatch(addToCart({
+        product: {
+          id: product.id,
+          title: product.title,
+          imageUrl: product.imageUrl,
+          price: product.price,
+          origin_price: product.origin_price,
+        },
+        quantity: 1
+      }));
+      dispatch(showToast("已加入購物車"));
+    } catch (error) {
+      console.error("加入購物車失敗", error);
+      alert("加入購物車失敗");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -53,13 +87,16 @@ const ProductDetail: React.FC = () => {
 
   return (
     <>
-      <Navbar /> {/* Add this line */}
+      <Navbar />
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center">
           <h1>產品詳細頁</h1>
-          <button className="btn btn-outline-primary" onClick={() => navigate("/products")}>
-            返回產品列表
-          </button>
+          <button
+          className="btn btn-danger"
+          onClick={handleAddToCart}
+        >
+          加到購物車
+        </button>
         </div>
         <img src={product.imageUrl} alt={product.title} className="img-fluid mb-3" />
         <h2>{product.title}</h2>
@@ -68,11 +105,9 @@ const ProductDetail: React.FC = () => {
         <p>
           價格：{product.price} 元 <del>{product.origin_price} 元</del>
         </p>
-        {/* <div className="text-end">
-          <button className="btn btn-outline-primary" onClick={() => navigate("/products")}>
+        <button className="btn btn-outline-primary" onClick={() => navigate("/products")}>
             返回產品列表
           </button>
-        </div> */}
       </div>
     </>
   );
